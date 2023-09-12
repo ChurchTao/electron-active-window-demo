@@ -2,6 +2,7 @@ import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import ActiveWindow from '@paymoapp/active-window'
 
 function createWindow() {
   // Create the browser window.
@@ -33,6 +34,23 @@ function createWindow() {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+  ActiveWindow.initialize()
+
+  if (!ActiveWindow.requestPermissions()) {
+    console.log(
+      'Error: You need to grant screen recording permission in System Preferences > Security & Privacy > Privacy > Screen Recording'
+    )
+    process.exit(0)
+  }
+
+  const activeWin = ActiveWindow.getActiveWindow()
+
+  console.log('Window title:', activeWin.title)
+  console.log('Application:', activeWin.application)
+  console.log('Application path:', activeWin.path)
+  console.log('Application PID:', activeWin.pid)
+  console.log('Application icon:', activeWin.icon)
 }
 
 // This method will be called when Electron has finished
